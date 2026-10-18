@@ -1,0 +1,15 @@
+
+{
+  "name": "codzee-code-review-task",
+  "version": "1.0.0",
+  "description": "Task Manager API for code review evaluation",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
+  
