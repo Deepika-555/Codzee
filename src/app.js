@@ -23,6 +23,18 @@ const server = http.createServer((req, res) => {
       try {
         const data = JSON.parse(body);
 
+        
+        if (
+          typeof data.title !== "string" ||
+          data.title.trim().length === 0
+        ) {
+          res.writeHead(400);
+          return res.end(
+            JSON.stringify({ error: "Task title is required" })
+          );
+        }
+
+
         const task = {
           id: nextId++,
           title: data.title,
