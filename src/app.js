@@ -62,7 +62,7 @@ const server = http.createServer((req, res) => {
 
       const title = data.title.trim();
 
-      if (title.length > MAX_TITLE_LENGTH) {
+      if ([...title].length > MAX_TITLE_LENGTH) {
         res.writeHead(400);
         return res.end(
           JSON.stringify({ error: "Task title must be 200 characters or fewer" })
