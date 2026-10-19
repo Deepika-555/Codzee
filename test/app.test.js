@@ -88,4 +88,28 @@ test("Task API validates and creates tasks", async (t) => {
 
   const tasks = await response.json();
   assert.ok(tasks.some((item) => item.id === task.id));
+  
+  // Delete an existing task
+  const deleted = await fetch(`${url}/tasks/${task.id}`, {
+    method: "DELETE"
+  });
+  assert.equal(deleted.status, 200);
+
+  // Deleted task should no longer appear in the list
+  const afterDelete = await fetch(`${url}/tasks`);
+  const remainingTasks = await afterDelete.json();
+  assert.ok(!remainingTasks.some((item) => item.id === task.id));
+
+  // Deleting the same task again should return 404
+  const deleteAgain = await fetch(`${url}/tasks/${task.id}`, {
+    method: "DELETE"
+  });
+  assert.equal(deleteAgain.status, 404);
+
+  // Invalid task ID should return 400
+  const invalidDelete = await fetch(`${url}/tasks/abc`, {
+    method: "DELETE"
+  });
+  assert.equal(invalidDelete.status, 400);
+
 });
