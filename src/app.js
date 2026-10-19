@@ -84,8 +84,8 @@ const server = http.createServer((req, res) => {
   }
 
 if (req.method === "DELETE" && req.url.startsWith("/tasks/")) {
-  const idPart = req.url.slice("/tasks/".length);
-
+const pathname = new URL(req.url, "http://localhost").pathname;
+const idPart = pathname.slice("/tasks/".length);
   // Accept only positive integer task IDs
   if (!/^[1-9]\d*$/.test(idPart)) {
     res.writeHead(400, { "Content-Type": "application/json" });
