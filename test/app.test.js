@@ -88,4 +88,51 @@ test("Task API validates and creates tasks", async (t) => {
 
   const tasks = await response.json();
   assert.ok(tasks.some((item) => item.id === task.id));
+  
+  const beforeDeleteResponse = await fetch(`${url}/tasks`);
+  const beforeDeleteTasks = await beforeDeleteResponse.json();
+  const beforeCount = beforeDeleteTasks.length;
+
+  assert.equal(remainingTasks.length, beforeCount - 1);
+
+  // Delete an existing task
+const deleted = await fetch(`${url}/tasks/${task.id}?source=test`, {
+  method: "DELETE"
+});
+assert.equal(deleted.status, 200);
+
+  // Deleted task should no longer appear in the list
+  const afterDelete = await fetch(`${url}/tasks`);
+  const remainingTasks = await afterDelete.json();
+  assert.ok(!remainingTasks.some((item) => item.id === task.id));
+
+  // Deleting the same task again should return 404
+  const deleteAgain = await fetch(`${url}/tasks/${task.id}`, {
+    method: "DELETE"
+  });
+  assert.equal(deleteAgain.status, 404);
+
+  // Invalid task ID should return 400
+  const invalidDelete = await fetch(`${url}/tasks/abc`, {
+    method: "DELETE"
+  });
+  assert.equal(invalidDelete.status, 400);
+
+  
+  // Invalid task ID formats should return 400
+  for (const id of ["0", "01", "-1", "1.5", "abc", "99999999999999999999"]) {
+    const response = await fetch(`${url}/tasks/${id}`, {
+      method: "DELETE"
+    });
+    assert.equal(response.status, 400, `Expected 400 for ID: ${id}`);
+  }
+
+  // Empty ID should not delete a task
+  const emptyId = await fetch(`${url}/tasks/`, {
+    method: "DELETE"
+  });
+  assert.notEqual(emptyId.status, 200);
+
+
+
 });

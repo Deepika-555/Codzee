@@ -83,6 +83,32 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+if (req.method === "DELETE" && req.url.startsWith("/tasks/")) {
+const pathname = new URL(req.url, "http://localhost").pathname;
+const idPart = pathname.slice("/tasks/".length);
+  // Accept only positive integer task IDs
+  if (!/^[1-9]\d*$/.test(idPart)) {
+    res.writeHead(400, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "Invalid task ID" }));
+    return;
+  }
+
+  const id = Number(idPart);
+  const index = tasks.findIndex((task) => task.id === id);
+
+  if (index === -1) {
+    res.writeHead(404, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: "Task not found" }));
+    return;
+  }
+
+  tasks.splice(index, 1);
+
+  res.writeHead(200, { "Content-Type": "application/json" });
+  res.end(JSON.stringify({ message: "Task deleted successfully" }));
+  return;
+}
+
 
   res.writeHead(404);
   res.end(JSON.stringify({ error: "Route not found" }));
